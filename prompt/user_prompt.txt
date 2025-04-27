@@ -1,0 +1,43 @@
+I need you to reformat the input YAML data to match the exact structure of the provided template. 
+
+DETAILED REQUIREMENTS:
+1. The input contains approximately 30 distinct API endpoints
+2. Format EVERY SINGLE endpoint from the input data
+3. Maintain the hierarchical structure shown in the template
+4. Each endpoint must include:
+   - text (descriptive name)
+   - description (detailed explanation)
+   - verb (HTTP method)
+   - path (URL path)
+   - parameters (all parameters with their properties)
+5. For parameters, preserve:
+   - name
+   - description
+   - required flag
+   - alternatives array
+
+FORMATTING CONSTRAINTS:
+- YAML indentation must be consistent and correct 
+- Use exactly 2 spaces for each indentation level
+- All items at the same nesting level must start at the same column
+- All list items must start with "- " at the proper indentation level
+- All property values must be correctly aligned
+- DO NOT mix tabs and spaces for indentation
+
+CRITICAL CONSTRAINTS:
+- DO NOT omit any endpoints from the input
+- DO NOT modify the core data structure
+- DO NOT add explanatory text to your response
+- RETURN ONLY valid YAML formatted according to the template
+
+Here's the input YAML data to format:
+```yaml
+{INPUT_CONTENT}
+```
+
+And here's the template structure to follow:
+```yaml
+{TEMPLATE_CONTENT}
+```
+
+Ensure your output contains ALL endpoints from the input data. Before completing your task, count the total number of endpoints in both the input and your output to verify no data was lost.

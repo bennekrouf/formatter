@@ -1,0 +1,126 @@
+api_groups:
+  - name: "API Endpoints"
+    description: "Various API endpoints for different operations"
+    base: ""
+    endpoints:
+      - text: "Get user"
+        description: Retrieves user information
+        verb: GET
+        path: "/users/{id}"
+        parameters:
+          - name: id
+            description: User identifier
+            required: true
+            alternatives:
+              - user_id
+              - userId
+
+      - text: "Login"
+        description: Authenticates a user
+        verb: POST
+        path: "/login"
+        parameters:
+          - name: username
+            description: User's login name
+            required: true
+            alternatives: []
+          - name: password
+            description: User's password
+            required: true
+            alternatives: []
+
+      - text: "Generate trace report"
+        description: Generates trace report for date range
+        verb: POST
+        path: "/trace/generate"
+        parameters:
+          - name: startDate
+            description: Start date of the trace period
+            required: true
+            alternatives:
+              - start_date
+
+          - name: endDate
+            description: End date of the trace period
+            required: true
+            alternatives:
+              - end_date
+
+      - text: "Get trace data"
+        description: Gets trace data within a specified date range
+        verb: GET
+        path: "/trace/data"
+        parameters:
+          - name: startDate
+            description: Start date of the trace period
+            required: true
+            alternatives:
+              - start_date
+
+          - name: endDate
+            description: End date of the trace period
+            required: true
+            alternatives:
+              - end_date
+
+      - text: "Create new user"
+        description: Creates a new user account
+        verb: POST
+        path: "/users/create"
+        parameters:
+          - name: firstName
+            description: First name of the user
+            required: true
+            alternatives: []
+          - name: lastName
+            description: Last name of the user
+            required: true
+            alternatives: []
+
+      - text: "Update user information"
+        description: Updates the user's personal information
+        verb: PUT
+        path: "/users/update/{id}"
+        parameters:
+          - name: id
+            description: User identifier to update
+            required: true
+            alternatives:
+              - user_id
+              - userId
+
+      - text: "Delete user account"
+        description: Permanently deletes a user's account
+        verb: DELETE
+        path: "/users/delete/{id}"
+        parameters:
+          - name: id
+            description: User identifier to delete
+            required: true
+            alternatives:
+              - user_id
+              - userId
+
+      - text: "Get list of users"
+        description: Retrieves a list of all users
+        verb: GET
+        path: "/users/list"
+        parameters:
+          - name: offset
+            description: Offset to start retrieving from (optional)
+            required: false
+            alternatives: []
+          - name: limit
+            description: Number of results to return per page (optional)
+            required: false
+            alternatives: []
+
+      - text: "Check API availability"
+        description: Checks if the API is currently available
+        verb: GET
+        path: "/availability/check"
+        parameters:
+          - name: endpoint
+            description: The specific endpoint to check
+            required: true
+            alternatives: []
