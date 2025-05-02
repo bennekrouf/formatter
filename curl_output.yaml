@@ -1,112 +1,32 @@
 api_groups:
-  - name: "User Management"
-    description: "Endpoints for managing user information"
-    base: "https://api.example.com"
+  - name: "Service 1"
+    description: "Service API endpoints"
+    base: "https://service1.example.com"
     endpoints:
-      - text: "Get user"
-        description: "Retrieves detailed user information based on ID"
-        verb: GET
-        path: "/users/{id}"
+      - text: "get_themes_list"
+        description: "Return all categories and information"
+        verb: "GET"
+        path: "/themes"
         parameters:
-          - name: id
-            description: User identifier (e.g., UUID)
+          - name: "category_id"  # Added as a placeholder since not provided in input
+            description: "Category identifier for filtering themes"
+            required: false
+            alternatives: []
+          - name: "theme_id"
+            description: "Theme identifier to retrieve specific theme details"
             required: true
-            alternatives:
-              - "user_id"
-              - "userId"
+            alternatives: []
 
-      - text: "Update user info"
-        description: Updates specific user information
-        verb: PUT
-        path: "/users/{id}/profile"
-        parameters:
-          - name: id
-            description: User identifier (e.g., UUID)
-            required: true
-            alternatives:
-              - "user_id"
-              - "userId"
-
-      - text: "Delete user"
-        description: Permanently removes a user from the system
-        verb: DELETE
-        path: "/users/{id}"
-        parameters:
-          - name: id
-            description: User identifier (e.g., UUID)
-            required: true
-            alternatives:
-              - "user_id"
-              - "userId"
-
-  - name: "Inspection Management"
-    description: "Endpoints for managing inspection information"
-    base: "https://api.example.com"
+  - name: "Service 2"
+    description: "Document upload and management API"
+    base: "https://service2.example.com"
     endpoints:
-      - text: "Get inspection report"
-        description: Retrieves detailed inspection results for a vehicle
-        verb: GET
-        path: "/inspections/{reportId}"
+      - text: "upload_document"
+        description: "Upload a document with event ID"
+        verb: "POST"
+        path: "/documents/{event_id}"
         parameters:
-          - name: reportId
-            description: ID of the inspection report to retrieve
+          - name: "file"
+            description: "File to upload"
             required: true
-            alternatives:
-              - "inspection_id"
-
-      - text: "Update inspection status"
-        description: Updates the status of an inspection result
-        verb: PUT
-        path: "/inspections/{reportId}/status"
-        parameters:
-          - name: reportId
-            description: ID of the inspection report to update
-            required: true
-            alternatives:
-              - "inspection_id"
-
-      - text: "Delete inspection"
-        description: Removes an inspection from the system
-        verb: DELETE
-        path: "/inspections/{reportId}"
-        parameters:
-          - name: reportId
-            description: ID of the inspection to delete
-            required: true
-            alternatives:
-              - "inspection_id"
-
-  - name: "Authentication"
-    description: "Endpoints for authentication-related operations"
-    base: "https://api.example.com"
-    endpoints:
-      - text: "Login user"
-        description: Authenticates a user and returns a token
-        verb: POST
-        path: "/auth/login"
-        parameters:
-          - name: username
-            description: User's email or username for login
-            required: true
-
-          - name: password
-            description: User's password to authenticate
-            required: true
-
-      - text: "Logout user"
-        description: Logouts the current user session
-        verb: POST
-        path: "/auth/logout"
-        parameters:
-          - name: Authorization
-            description: Bearer token for authentication
-            required: true
-
-      - text: "Check auth status"
-        description: Checks if a user is authenticated
-        verb: GET
-        path: "/auth/status"
-        parameters:
-          - name: Authorization
-            description: Bearer token for authentication
-            required: true
+            alternatives: []
