@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 actix-multipart = "0.7.2"
 actix-web = "4.10.2"
+dotenv = "0.15.0"
 futures-util = "0.3.31"
 reqwest = { version = "0.12.15", features = ["json"] }
 sanitize-filename = "0.6.0"

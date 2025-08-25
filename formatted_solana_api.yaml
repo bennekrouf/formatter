@@ -1,0 +1,128 @@
+api_groups:
+  - name: "Solana API"
+    description: "Solana API endpoints"
+    base: "http://localhost:8000"
+    endpoints:
+      - text: "Health Check"
+        description: "Check if the API service is running."
+        verb: "GET"
+        path: "/solana/health"
+        parameters: []
+
+      - text: "Get Balance"
+        description: "Get SOL balance for a specific public key."
+        verb: "POST"
+        path: "/solana/balance"
+        parameters:
+          - name: "pubkey"
+            description: "Solana public key"
+            required: true
+            alternatives: []
+
+      - text: "Prepare Swap Transaction"
+        description: "Prepare an unsigned swap transaction using Jupiter."
+        verb: "POST"
+        path: "/solana/swap/prepare"
+        parameters:
+          - name: "payer_pubkey"
+            description: "Public key that pays fees"
+            required: true
+            alternatives: []
+          - name: "from_token"
+            description: "Token symbol or mint address"
+            required: true
+            alternatives: []
+          - name: "to_token"
+            description: "Token symbol or mint address"
+            required: true
+            alternatives: []
+          - name: "amount"
+            description: "Amount to swap"
+            required: true
+            alternatives: []
+
+      - text: "Prepare SOL Transfer Transaction"
+        description: "Prepare an unsigned SOL transfer transaction."
+        verb: "POST"
+        path: "/solana/transaction/prepare"
+        parameters:
+          - name: "payer_pubkey"
+            description: "Public key that pays fees and sends"
+            required: true
+            alternatives: []
+          - name: "to_address"
+            description: "Recipient public key"
+            required: true
+            alternatives: []
+          - name: "amount"
+            description: "Amount in SOL"
+            required: true
+            alternatives: []
+
+      - text: "Submit Signed Transaction"
+        description: "Submit a signed transaction to the Solana network."
+        verb: "POST"
+        path: "/solana/transaction/submit"
+        parameters:
+          - name: "signed_transaction"
+            description: "Base64 encoded signed transaction"
+            required: true
+            alternatives: []
+
+      - text: "Get Token Price"
+        description: "Get current USD price for a token."
+        verb: "POST"
+        path: "/solana/price"
+        parameters:
+          - name: "token"
+            description: "Token symbol or mint address"
+            required: true
+            alternatives: []
+
+      - text: "Search Tokens"
+        description: "Search for tokens by symbol, name, or address."
+        verb: "POST"
+        path: "/solana/tokens/search"
+        parameters:
+          - name: "query"
+            description: "Search term"
+            required: true
+            alternatives: []
+
+      - text: "Get Wallet Tokens"
+        description: "Get all tokens held by a wallet with balances and USD values."
+        verb: "POST"
+        path: "/solana/wallet/tokens"
+        parameters:
+          - name: "pubkey"
+            description: "Wallet public key"
+            required: true
+            alternatives: []
+
+      - text: "Get Transaction History"
+        description: "Get transaction history for a wallet."
+        verb: "POST"
+        path: "/solana/transactions/history"
+        parameters:
+          - name: "pubkey"
+            description: "Wallet public key"
+            required: true
+            alternatives: []
+          - name: "limit"
+            description: "Number of transactions (default: 50)"
+            required: false
+            alternatives: []
+          - name: "before"
+            description: "Signature to paginate before"
+            required: false
+            alternatives: []
+
+      - text: "Get Pending Transactions"
+        description: "Get pending transactions for a wallet."
+        verb: "POST"
+        path: "/solana/transactions/pending"
+        parameters:
+          - name: "pubkey"
+            description: "Wallet public key"
+            required: true
+            alternatives: []

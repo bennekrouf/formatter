@@ -3,6 +3,7 @@ use std::path::Path;
 // use std::sync::Mutex;
 use actix_multipart::{Field, Multipart};
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
+use format_yaml_with_ollama::format_yaml_with_cohere;
 use futures_util::stream::StreamExt;
 use futures_util::TryStreamExt;
 use tempfile::NamedTempFile;
@@ -15,8 +16,6 @@ mod load_prompt;
 mod models;
 mod yaml_validator;
 
-use crate::format_yaml_with_ollama::format_yaml_with_ollama;
-
 struct AppState {
     template_path: String,
     system_prompt_path: String,
@@ -25,6 +24,8 @@ struct AppState {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Load environment variables at startup
+    dotenv::dotenv().ok();
     // Initialize tracing
     tracing_subscriber::fmt::init();
     info!("Starting YAML formatter HTTP service");
@@ -126,7 +127,8 @@ async fn format_yaml_handler(
     info!("Processing file: {}", input_file_path);
 
     // Process the uploaded file
-    match format_yaml_with_ollama(
+    match format_yaml_with_cohere(
+        // renamed function
         &input_file_path,
         &app_state.template_path,
         &app_state.system_prompt_path,

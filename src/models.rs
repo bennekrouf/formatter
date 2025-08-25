@@ -1,16 +1,21 @@
 use serde::{Deserialize, Serialize};
 
-// Define the Ollama request structure
 #[derive(Serialize)]
-pub struct OllamaRequest {
+pub struct CohereRequest {
     pub model: String,
-    pub prompt: String,
-    pub stream: bool,
-    pub system: String,
+    pub message: String,
+    pub max_tokens: Option<u32>,
+    pub temperature: Option<f64>,
+    pub chat_history: Vec<ChatMessage>,
 }
 
-// Define the Ollama response structure
+#[derive(Serialize, Deserialize)]
+pub struct ChatMessage {
+    pub role: String,
+    pub message: String,
+}
+
 #[derive(Deserialize, Debug)]
-pub struct OllamaResponse {
-    pub response: String,
+pub struct CohereResponse {
+    pub text: String,
 }

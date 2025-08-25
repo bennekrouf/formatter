@@ -1,4 +1,5 @@
 use reqwest::Client;
+use std::env;
 use std::error::Error;
 use std::fs;
 use tracing::{debug, error, info};
@@ -6,66 +7,67 @@ use tracing::{debug, error, info};
 use crate::{
     extract_yaml::extract_yaml,
     load_prompt::load_prompt,
-    models::{OllamaRequest, OllamaResponse},
+    models::{ChatMessage, CohereRequest, CohereResponse},
     yaml_validator,
 };
 
-// The main function that will process the file
-pub async fn format_yaml_with_ollama(
+pub async fn format_yaml_with_cohere(
     input_file_path: &str,
     template_file_path: &str,
     system_prompt_path: &str,
     user_prompt_path: &str,
 ) -> Result<String, Box<dyn Error>> {
-    // Read the input file
+    // Load environment variables
+    dotenv::dotenv().ok();
+    let api_key = env::var("COHERE_API_KEY")
+        .map_err(|_| "COHERE_API_KEY not found in environment variables")?;
+
+    // Read files (same as before)
     let input_content = fs::read_to_string(input_file_path)?;
-    debug!("Read input file: {}", input_file_path);
-
-    // Read the template file
     let template_content = fs::read_to_string(template_file_path)?;
-    debug!("Read template file: {}", template_file_path);
-
-    // Load prompt templates
     let system_prompt = load_prompt(system_prompt_path)?;
     let user_prompt_template = load_prompt(user_prompt_path)?;
 
-    // Replace placeholders in the user prompt
     let user_prompt = user_prompt_template
         .replace("{INPUT_CONTENT}", &input_content)
         .replace("{TEMPLATE_CONTENT}", &template_content);
 
-    // Call Ollama API
-    info!("Calling Ollama API");
+    // Prepare Cohere request
     let client = Client::new();
-    let request = OllamaRequest {
-        model: "deepseek-r1:8b".to_string(),
-        prompt: user_prompt,
-        stream: false,
-        system: system_prompt,
+    let request = CohereRequest {
+        model: "command-r7b-12-2024".to_string(), // or "command-r-08-2024"
+        // model:     "command".to_string(), // or "command-nightly", "command-light"
+        message: user_prompt,
+        max_tokens: Some(4000),
+        temperature: Some(0.3),
+        chat_history: vec![ChatMessage {
+            role: "SYSTEM".to_string(),
+            message: system_prompt,
+        }],
     };
 
+    info!("Calling Cohere API");
     let resp = client
-        .post("http://localhost:11434/api/generate")
+        .post("https://api.cohere.ai/v1/chat")
+        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Content-Type", "application/json")
         .json(&request)
         .send()
         .await?;
 
     if !resp.status().is_success() {
         let error_text = resp.text().await?;
-        error!("Failed to call Ollama: {}", error_text);
-        return Err(format!("Ollama API error: {}", error_text).into());
+        error!("Failed to call Cohere: {}", error_text);
+        return Err(format!("Cohere API error: {}", error_text).into());
     }
 
-    let ollama_response: OllamaResponse = resp.json().await?;
-    info!("Received response from Ollama");
+    let cohere_response: CohereResponse = resp.json().await?;
+    info!("Received response from Cohere");
 
-    // Extract only the YAML part if there are any explanations
-    let yaml_content = extract_yaml(&ollama_response.response);
-    debug!("Extracted YAML: {}", yaml_content);
-
-    // Validate and fix YAML indentation issues
+    // Extract and validate YAML (same as before)
+    let yaml_content = extract_yaml(&cohere_response.text);
     let fixed_yaml = yaml_validator::validate_and_fix_yaml(&yaml_content)?;
-    info!("YAML validated and fixed");
 
     Ok(fixed_yaml)
 }
+
