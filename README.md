@@ -60,7 +60,7 @@ The service will start on port 8080.
 
 ```bash
 curl -X POST \
-  -F "file=@input.yaml" \
+  -F "file=@divess.yaml" \
   http://localhost:8080/format-yaml \
   -o formatted_output.yaml
 ```

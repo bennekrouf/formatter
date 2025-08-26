@@ -1,0 +1,363 @@
+api_groups:
+  - name: "Example API"
+    description: "Example API endpoints"
+    base: "https://api.example.com"
+    endpoints:
+      - text: "Get themes list"
+        description: "Return all categories and information"
+        verb: "GET"
+        path: "/themes"
+        parameters: []
+      - text: "Upload document"
+        description: "Upload a document with event ID"
+        verb: "POST"
+        path: "/documents"
+        parameters:
+          - name: "file"
+            description: "File to upload"
+            required: true
+            alternatives:
+              - "document"
+              - "upload_file"
+          - name: "idEvenement"
+            description: "Event ID"
+            required: true
+            alternatives:
+              - "event_id"
+              - "evenement_id"
+      - text: "Download document"
+        description: "Download a document by ID and name"
+        verb: "GET"
+        path: "/documents/{id}/{nom}"
+        parameters:
+          - name: "id"
+            description: "Document ID"
+            required: true
+            alternatives:
+              - "document_id"
+              - "doc_id"
+          - name: "nom"
+            description: "Document name"
+            required: true
+            alternatives:
+              - "name"
+              - "filename"
+      - text: "Delete document"
+        description: "Delete a document by ID"
+        verb: "DELETE"
+        path: "/documents/{id}"
+        parameters:
+          - name: "id"
+            description: "Document ID"
+            required: true
+            alternatives:
+              - "document_id"
+              - "doc_id"
+      - text: "Get events list"
+        description: "Get list of events for a service"
+        verb: "GET"
+        path: "/events"
+        parameters:
+          - name: "service"
+            description: "Service name"
+            required: true
+            alternatives:
+              - "service_id"
+          - name: "ids"
+            description: "List of event IDs"
+            required: true
+            alternatives:
+              - "event_ids"
+              - "evenement_ids"
+      - text: "Save event"
+        description: "Save a new event"
+        verb: "POST"
+        path: "/events"
+        parameters:
+          - name: "evenement"
+            description: "Event object"
+            required: true
+            alternatives:
+              - "event"
+              - "event_data"
+      - text: "Modify event relations"
+        description: "Modify relationships for an event"
+        verb: "PUT"
+        path: "/events/{id}/relations"
+        parameters:
+          - name: "evenement"
+            description: "Event object"
+            required: true
+            alternatives:
+              - "event"
+              - "event_data"
+      - text: "Get event"
+        description: "Get single event by ID"
+        verb: "GET"
+        path: "/events/{id}"
+        parameters:
+          - name: "id"
+            description: "Event ID"
+            required: true
+            alternatives:
+              - "event_id"
+              - "evenement_id"
+      - text: "Delete event"
+        description: "Delete an event"
+        verb: "DELETE"
+        path: "/events/{id}"
+        parameters:
+          - name: "id"
+            description: "Event ID"
+            required: true
+            alternatives:
+              - "event_id"
+              - "evenement_id"
+      - text: "Get provider journal"
+        description: "Get journal for a provider within a date range"
+        verb: "GET"
+        path: "/providers/journal"
+        parameters:
+          - name: "idPrestataire"
+            description: "Provider ID"
+            required: true
+            alternatives:
+              - "provider_id"
+          - name: "dateDebut"
+            description: "Start date"
+            required: true
+            alternatives:
+              - "start_date"
+          - name: "dateFin"
+            description: "End date"
+            required: true
+            alternatives:
+              - "end_date"
+          - name: "isActivite"
+            description: "Activity flag"
+            required: true
+            alternatives:
+              - "is_activity"
+      - text: "Get events list report"
+        description: "Get list of events within a date range"
+        verb: "GET"
+        path: "/events/report"
+        parameters:
+          - name: "dateDebut"
+            description: "Start date"
+            required: true
+            alternatives:
+              - "start_date"
+          - name: "dateFin"
+            description: "End date"
+            required: true
+            alternatives:
+              - "end_date"
+      - text: "Get contacts list"
+        description: "Get list of all contacts"
+        verb: "GET"
+        path: "/contacts"
+        parameters: []
+      - text: "Get actors list"
+        description: "Get list of all actors"
+        verb: "GET"
+        path: "/actors"
+        parameters: []
+      - text: "Get actors by name"
+        description: "Get list of actors by name and date"
+        verb: "GET"
+        path: "/actors/search"
+        parameters:
+          - name: "date"
+            description: "Date"
+            required: true
+            alternatives:
+              - "search_date"
+          - name: "idActivite"
+            description: "Activity ID"
+            required: true
+            alternatives:
+              - "activity_id"
+      - text: "Get active actors"
+        description: "Get list of active actors"
+        verb: "GET"
+        path: "/actors/active"
+        parameters:
+          - name: "date"
+            description: "Date"
+            required: true
+            alternatives:
+              - "search_date"
+          - name: "idInspection"
+            description: "Inspection ID"
+            required: true
+            alternatives:
+              - "inspection_id"
+      - text: "Save actor"
+        description: "Save a new actor"
+        verb: "POST"
+        path: "/actors"
+        parameters:
+          - name: "acteurDTO"
+            description: "Actor data"
+            required: true
+            alternatives:
+              - "actor"
+              - "actor_data"
+      - text: "Update actor"
+        description: "Update an existing actor"
+        verb: "PUT"
+        path: "/actors/{id}"
+        parameters:
+          - name: "acteurDTO"
+            description: "Actor data"
+            required: true
+            alternatives:
+              - "actor"
+              - "actor_data"
+      - text: "Delete actor"
+        description: "Delete an actor"
+        verb: "DELETE"
+        path: "/actors/{id}"
+        parameters:
+          - name: "id"
+            description: "Actor ID"
+            required: true
+            alternatives:
+              - "actor_id"
+      - text: "Get dossier"
+        description: "Get dossier by ID"
+        verb: "GET"
+        path: "/dossiers/{id}"
+        parameters:
+          - name: "id"
+            description: "Dossier ID"
+            required: true
+            alternatives:
+              - "dossier_id"
+      - text: "Get provider dossiers"
+        description: "Get dossiers for a provider"
+        verb: "GET"
+        path: "/providers/dossiers"
+        parameters:
+          - name: "idPrestataire"
+            description: "Provider ID"
+            required: true
+            alternatives:
+              - "provider_id"
+          - name: "typePrestataire"
+            description: "Provider type"
+            required: false
+            alternatives:
+              - "provider_type"
+          - name: "idSecteur"
+            description: "Sector ID"
+            required: false
+            alternatives:
+              - "sector_id"
+          - name: "spen"
+            description: "SPEN flag"
+            required: true
+            alternatives:
+              - "is_spen"
+      - text: "Get inspection evaluation"
+        description: "Get evaluation for an inspection"
+        verb: "GET"
+        path: "/inspections/evaluation"
+        parameters:
+          - name: "idInspection"
+            description: "Inspection ID"
+            required: true
+            alternatives:
+              - "inspection_id"
+      - text: "Get model report roles"
+        description: "Get roles for a model report"
+        verb: "GET"
+        path: "/model_reports/roles"
+        parameters:
+          - name: "idInspection"
+            description: "Inspection ID"
+            required: true
+            alternatives:
+              - "inspection_id"
+      - text: "Get period dossier"
+        description: "Get period for last open dossier"
+        verb: "GET"
+        path: "/dossiers/period"
+        parameters:
+          - name: "idActivite"
+            description: "Activity ID"
+            required: true
+            alternatives:
+              - "activity_id"
+          - name: "idSecteur"
+            description: "Sector ID"
+            required: true
+            alternatives:
+              - "sector_id"
+      - text: "Get periods list"
+        description: "Get list of all periods plus one"
+        verb: "GET"
+        path: "/periods"
+        parameters:
+          - name: "idActivite"
+            description: "Activity ID"
+            required: true
+            alternatives:
+              - "activity_id"
+          - name: "idSecteur"
+            description: "Sector ID"
+            required: true
+            alternatives:
+              - "sector_id"
+      - text: "Get period types"
+        description: "Get list of all period types"
+        verb: "GET"
+        path: "/periods/types"
+        parameters: []
+      - text: "Save period type"
+        description: "Save a new period type"
+        verb: "POST"
+        path: "/periods/types"
+        parameters:
+          - name: "periodeTypeDTO"
+            description: "Period type data"
+            required: true
+            alternatives:
+              - "period_type"
+              - "period_data"
+      - text: "Get system status"
+        description: "Get system status"
+        verb: "GET"
+        path: "/status"
+        parameters: []
+      - text: "Get trace data"
+        description: "Get trace data within date range"
+        verb: "GET"
+        path: "/trace"
+        parameters:
+          - name: "dateDebut"
+            description: "Start date"
+            required: true
+            alternatives:
+              - "start_date"
+          - name: "dateFin"
+            description: "End date"
+            required: true
+            alternatives:
+              - "end_date"
+      - text: "Generate trace report"
+        description: "Generate trace report for date range"
+        verb: "POST"
+        path: "/trace/report"
+        parameters:
+          - name: "dateDebut"
+            description: "Start date"
+            required: true
+            alternatives:
+              - "start_date"
+          - name: "dateFin"
+            description: "End date"
+            required: true
+            alternatives:
+              - "end_date"
