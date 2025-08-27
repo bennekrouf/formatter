@@ -39,7 +39,7 @@ pub async fn format_yaml_with_cohere(
         // model:     "command".to_string(), // or "command-nightly", "command-light"
         message: user_prompt,
         max_tokens: Some(4000),
-        temperature: Some(0.3),
+        temperature: Some(0.1),
         chat_history: vec![ChatMessage {
             role: "SYSTEM".to_string(),
             message: system_prompt,
@@ -70,4 +70,3 @@ pub async fn format_yaml_with_cohere(
 
     Ok(fixed_yaml)
 }
-

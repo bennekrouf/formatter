@@ -1,0 +1,11 @@
+
+Service 1:
+get the number of coffee
+description: "Return all information about a coffee"
+
+
+Service 2:
+
+upload a cofee document
+description: "Upload a document with event ID"
+

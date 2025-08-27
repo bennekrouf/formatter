@@ -1,363 +1,549 @@
 api_groups:
-  - name: "Example API"
-    description: "Example API endpoints"
-    base: "https://api.example.com"
+  - name: "General"
+    description: ""
+    base: ""
     endpoints:
-      - text: "Get themes list"
-        description: "Return all categories and information"
+      - text: "action_list"
+        description: "Get a list of actions for a specific application"
         verb: "GET"
-        path: "/themes"
+        path: "/actions"
+        parameters:
+          - name: "idApplication"
+            description: "ID of the application"
+            required: true
+      - text: "application_get"
+        description: "Retrieve application details by ID"
+        verb: "GET"
+        path: "/applications/{id}"
+        parameters:
+          - name: "id"
+            description: "Application ID"
+            required: true
+      - text: "bootstrap"
+        description: "Retrieve environment configuration and bootstrap data"
+        verb: "GET"
+        path: "/bootstrap"
         parameters: []
-      - text: "Upload document"
-        description: "Upload a document with event ID"
+      - text: "etat_list"
+        description: "Get a list of states for a specific application"
+        verb: "GET"
+        path: "/states"
+        parameters:
+          - name: "idApplication"
+            description: "ID of the application"
+            required: true
+      - text: "historiqueetat_list"
+        description: "Get history of state changes for a procedure"
+        verb: "GET"
+        path: "/procedure_history"
+        parameters:
+          - name: "pIdProcedure"
+            description: "ID of the procedure"
+            required: true
+      - text: "historiqueetat_get"
+        description: "Get specific state history by ID"
+        verb: "GET"
+        path: "/procedure_history/{id}"
+        parameters:
+          - name: "pId"
+            description: "ID of the state history"
+            required: true
+      - text: "procedure_create"
+        description: "Create a new procedure"
+        verb: "POST"
+        path: "/procedures"
+        parameters:
+          - name: "idApplication"
+            description: "ID of the application"
+            required: true
+          - name: "dateObjetMetier"
+            description: "Date of the business object"
+            required: true
+      - text: "procedure_get"
+        description: "Retrieve procedure details by ID"
+        verb: "GET"
+        path: "/procedures/{id}"
+        parameters:
+          - name: "id"
+            description: "Procedure ID"
+            required: true
+      - text: "procedure_actions_possibles"
+        description: "Get possible actions for a procedure"
+        verb: "GET"
+        path: "/procedure_actions"
+        parameters:
+          - name: "idProcedure"
+            description: "ID of the procedure"
+            required: true
+      - text: "procedure_informations"
+        description: "Get information for a procedure"
+        verb: "GET"
+        path: "/procedure_info"
+        parameters:
+          - name: "idProcedure"
+            description: "ID of the procedure"
+            required: true
+          - name: "typeObjetMetier"
+            description: "Type of business object"
+            required: true
+      - text: "procedure_effectuer_action"
+        description: "Perform an action on a procedure"
+        verb: "POST"
+        path: "/procedure_actions"
+        parameters:
+          - name: "idProcedure"
+            description: "ID of the procedure"
+            required: true
+          - name: "idAction"
+            description: "ID of the action"
+            required: true
+          - name: "date"
+            description: "Date of the action"
+            required: true
+      - text: "bannette_list"
+        description: "Get a list of bannettes"
+        verb: "GET"
+        path: "/bannettes"
+        parameters: []
+      - text: "bannette_download"
+        description: "Download a document from a bannette"
+        verb: "GET"
+        path: "/bannettes/{id}/{nom}"
+        parameters:
+          - name: "id"
+            description: "ID of the document"
+            required: true
+          - name: "nom"
+            description: "Name of the document"
+            required: true
+      - text: "bannette_delete"
+        description: "Delete a bannette"
+        verb: "DELETE"
+        path: "/bannettes/{id}"
+        parameters:
+          - name: "id"
+            description: "ID of the bannette"
+            required: true
+      - text: "generer_bordereau"
+        description: "Generate a bordereau document"
+        verb: "GET"
+        path: "/bordereau"
+        parameters:
+          - name: "idProcedure"
+            description: "ID of the procedure"
+            required: true
+          - name: "typeObjetMetier"
+            description: "Type of business object"
+            required: true
+      - text: "courrier_list"
+        description: "Get a list of mails"
+        verb: "GET"
+        path: "/mails"
+        parameters:
+          - name: "typeObjetMetier"
+            description: "Type of business object"
+            required: true
+      - text: "courrier_upload"
+        description: "Upload a new mail"
+        verb: "POST"
+        path: "/mails"
+        parameters:
+          - name: "typeObjetMetier"
+            description: "Type of business object"
+            required: true
+          - name: "file"
+            description: "File to upload"
+            required: true
+      - text: "courrier_download"
+        description: "Download a mail"
+        verb: "GET"
+        path: "/mails/{id}/{nom}"
+        parameters:
+          - name: "id"
+            description: "ID of the mail"
+            required: true
+          - name: "nom"
+            description: "Name of the mail"
+            required: true
+      - text: "courrier_delete"
+        description: "Delete a mail"
+        verb: "DELETE"
+        path: "/mails/{id}"
+        parameters:
+          - name: "id"
+            description: "ID of the mail"
+            required: true
+      - text: "courrier_generate"
+        description: "Generate a mail document"
+        verb: "GET"
+        path: "/mail_document"
+        parameters:
+          - name: "idCourrier"
+            description: "ID of the mail"
+            required: true
+          - name: "nomCourrier"
+            description: "Name of the mail"
+            required: true
+          - name: "idProcedure"
+            description: "ID of the procedure"
+            required: true
+          - name: "typeObjetMetier"
+            description: "Type of business object"
+            required: true
+          - name: "idProcedureSignalementAssocie"
+            description: "ID of the associated reporting procedure"
+            required: true
+      - text: "courrier_tester"
+        description: "Test a mail document"
+        verb: "GET"
+        path: "/mail_test"
+        parameters:
+          - name: "idCourrier"
+            description: "ID of the mail"
+            required: true
+          - name: "nomCourrier"
+            description: "Name of the mail"
+            required: true
+          - name: "typeObjetMetier"
+            description: "Type of business object"
+            required: true
+      - text: "document_antivirus"
+        description: "Check a document with antivirus"
+        verb: "POST"
+        path: "/documents/antivirus"
+        parameters:
+          - name: "file"
+            description: "File to check"
+            required: true
+      - text: "document_upload"
+        description: "Upload a new document"
         verb: "POST"
         path: "/documents"
         parameters:
           - name: "file"
             description: "File to upload"
             required: true
-            alternatives:
-              - "document"
-              - "upload_file"
           - name: "idEvenement"
-            description: "Event ID"
+            description: "ID of the event"
             required: true
-            alternatives:
-              - "event_id"
-              - "evenement_id"
-      - text: "Download document"
-        description: "Download a document by ID and name"
+      - text: "document_download"
+        description: "Download a document"
         verb: "GET"
         path: "/documents/{id}/{nom}"
         parameters:
           - name: "id"
-            description: "Document ID"
+            description: "ID of the document"
             required: true
-            alternatives:
-              - "document_id"
-              - "doc_id"
           - name: "nom"
-            description: "Document name"
+            description: "Name of the document"
             required: true
-            alternatives:
-              - "name"
-              - "filename"
-      - text: "Delete document"
-        description: "Delete a document by ID"
+      - text: "document_delete"
+        description: "Delete a document"
         verb: "DELETE"
         path: "/documents/{id}"
         parameters:
           - name: "id"
-            description: "Document ID"
+            description: "ID of the document"
             required: true
-            alternatives:
-              - "document_id"
-              - "doc_id"
-      - text: "Get events list"
-        description: "Get list of events for a service"
-        verb: "GET"
-        path: "/events"
-        parameters:
-          - name: "service"
-            description: "Service name"
-            required: true
-            alternatives:
-              - "service_id"
-          - name: "ids"
-            description: "List of event IDs"
-            required: true
-            alternatives:
-              - "event_ids"
-              - "evenement_ids"
-      - text: "Save event"
-        description: "Save a new event"
-        verb: "POST"
-        path: "/events"
-        parameters:
-          - name: "evenement"
-            description: "Event object"
-            required: true
-            alternatives:
-              - "event"
-              - "event_data"
-      - text: "Modify event relations"
-        description: "Modify relationships for an event"
-        verb: "PUT"
-        path: "/events/{id}/relations"
-        parameters:
-          - name: "evenement"
-            description: "Event object"
-            required: true
-            alternatives:
-              - "event"
-              - "event_data"
-      - text: "Get event"
-        description: "Get single event by ID"
+      - text: "evenement_get"
+        description: "Retrieve event details by ID"
         verb: "GET"
         path: "/events/{id}"
         parameters:
           - name: "id"
             description: "Event ID"
             required: true
-            alternatives:
-              - "event_id"
-              - "evenement_id"
-      - text: "Delete event"
+      - text: "evenement_list"
+        description: "Get a list of events"
+        verb: "GET"
+        path: "/events"
+        parameters:
+          - name: "typeObjetMetier"
+            description: "Type of business object"
+            required: true
+          - name: "ids"
+            description: "List of IDs"
+            required: true
+      - text: "evenement_create"
+        description: "Create a new event"
+        verb: "POST"
+        path: "/events"
+        parameters:
+          - name: "evenementDto"
+            description: "Event data"
+            required: true
+      - text: "evenement_update"
+        description: "Update an event"
+        verb: "PUT"
+        path: "/events/{id}"
+        parameters:
+          - name: "id"
+            description: "ID of the event"
+            required: true
+          - name: "dto"
+            description: "Event data"
+            required: true
+      - text: "evenement_checkDroitPourModification"
+        description: "Check rights for modifying an event"
+        verb: "GET"
+        path: "/events/{id}/rights"
+        parameters:
+          - name: "id"
+            description: "ID of the event"
+            required: true
+      - text: "evenement_delete"
         description: "Delete an event"
         verb: "DELETE"
         path: "/events/{id}"
         parameters:
           - name: "id"
-            description: "Event ID"
+            description: "ID of the event"
             required: true
-            alternatives:
-              - "event_id"
-              - "evenement_id"
-      - text: "Get provider journal"
-        description: "Get journal for a provider within a date range"
+      - text: "recherche"
+        description: "Search for objects"
         verb: "GET"
-        path: "/providers/journal"
+        path: "/search"
         parameters:
-          - name: "idPrestataire"
-            description: "Provider ID"
+          - name: "recherche"
+            description: "Search query"
             required: true
-            alternatives:
-              - "provider_id"
-          - name: "dateDebut"
-            description: "Start date"
-            required: true
-            alternatives:
-              - "start_date"
-          - name: "dateFin"
-            description: "End date"
-            required: true
-            alternatives:
-              - "end_date"
-          - name: "isActivite"
-            description: "Activity flag"
-            required: true
-            alternatives:
-              - "is_activity"
-      - text: "Get events list report"
-        description: "Get list of events within a date range"
+      - text: "tableauStatistiques_genererTableauStatistiquesCS"
+        description: "Generate CS statistics table"
         verb: "GET"
-        path: "/events/report"
+        path: "/cs_stats"
         parameters:
-          - name: "dateDebut"
-            description: "Start date"
+          - name: "periodeDu"
+            description: "Start date period"
             required: true
-            alternatives:
-              - "start_date"
-          - name: "dateFin"
-            description: "End date"
+          - name: "periodeAu"
+            description: "End date period"
             required: true
-            alternatives:
-              - "end_date"
-      - text: "Get contacts list"
-        description: "Get list of all contacts"
+      - text: "tableauStatistiques_genererTableauStatistiquesSignalement"
+        description: "Generate reporting statistics table"
         verb: "GET"
-        path: "/contacts"
-        parameters: []
-      - text: "Get actors list"
-        description: "Get list of all actors"
-        verb: "GET"
-        path: "/actors"
-        parameters: []
-      - text: "Get actors by name"
-        description: "Get list of actors by name and date"
-        verb: "GET"
-        path: "/actors/search"
+        path: "/reporting_stats"
         parameters:
-          - name: "date"
-            description: "Date"
+          - name: "periodeDu"
+            description: "Start date period"
             required: true
-            alternatives:
-              - "search_date"
-          - name: "idActivite"
-            description: "Activity ID"
+          - name: "periodeAu"
+            description: "End date period"
             required: true
-            alternatives:
-              - "activity_id"
-      - text: "Get active actors"
-        description: "Get list of active actors"
+      - text: "tableauStatistiques_genererTableauStatistiquesSignalementsEtDoleances"
+        description: "Generate reports and complaints statistics table"
         verb: "GET"
-        path: "/actors/active"
+        path: "/reports_and_complaints_stats"
         parameters:
-          - name: "date"
-            description: "Date"
+          - name: "periodeDu"
+            description: "Start date period"
             required: true
-            alternatives:
-              - "search_date"
-          - name: "idInspection"
-            description: "Inspection ID"
+          - name: "periodeAu"
+            description: "End date period"
             required: true
-            alternatives:
-              - "inspection_id"
-      - text: "Save actor"
-        description: "Save a new actor"
+      - text: "trace_generate"
+        description: "Generate person trace"
+        verb: "GET"
+        path: "/person_trace"
+        parameters:
+          - name: "idPersonne"
+            description: "ID of the person"
+            required: true
+      - text: "persons_search"
+        description: "Search for persons"
+        verb: "GET"
+        path: "/persons"
+        parameters:
+          - name: "type"
+            description: "Type of search"
+            required: true
+          - name: "q"
+            description: "Search query"
+            required: true
+      - text: "persons_save"
+        description: "Save a person"
         verb: "POST"
-        path: "/actors"
+        path: "/persons"
         parameters:
-          - name: "acteurDTO"
-            description: "Actor data"
+          - name: "personneDto"
+            description: "Person data"
             required: true
-            alternatives:
-              - "actor"
-              - "actor_data"
-      - text: "Update actor"
-        description: "Update an existing actor"
+      - text: "persons_updateMembreCS"
+        description: "Update a CS member"
         verb: "PUT"
-        path: "/actors/{id}"
-        parameters:
-          - name: "acteurDTO"
-            description: "Actor data"
-            required: true
-            alternatives:
-              - "actor"
-              - "actor_data"
-      - text: "Delete actor"
-        description: "Delete an actor"
-        verb: "DELETE"
-        path: "/actors/{id}"
+        path: "/persons/{id}"
         parameters:
           - name: "id"
-            description: "Actor ID"
+            description: "ID of the person"
             required: true
-            alternatives:
-              - "actor_id"
-      - text: "Get dossier"
-        description: "Get dossier by ID"
-        verb: "GET"
-        path: "/dossiers/{id}"
-        parameters:
-          - name: "id"
-            description: "Dossier ID"
-            required: true
-            alternatives:
-              - "dossier_id"
-      - text: "Get provider dossiers"
-        description: "Get dossiers for a provider"
-        verb: "GET"
-        path: "/providers/dossiers"
-        parameters:
-          - name: "idPrestataire"
-            description: "Provider ID"
-            required: true
-            alternatives:
-              - "provider_id"
-          - name: "typePrestataire"
-            description: "Provider type"
-            required: false
-            alternatives:
-              - "provider_type"
-          - name: "idSecteur"
-            description: "Sector ID"
-            required: false
-            alternatives:
-              - "sector_id"
-          - name: "spen"
-            description: "SPEN flag"
-            required: true
-            alternatives:
-              - "is_spen"
-      - text: "Get inspection evaluation"
-        description: "Get evaluation for an inspection"
-        verb: "GET"
-        path: "/inspections/evaluation"
-        parameters:
-          - name: "idInspection"
-            description: "Inspection ID"
-            required: true
-            alternatives:
-              - "inspection_id"
-      - text: "Get model report roles"
-        description: "Get roles for a model report"
-        verb: "GET"
-        path: "/model_reports/roles"
-        parameters:
-          - name: "idInspection"
-            description: "Inspection ID"
-            required: true
-            alternatives:
-              - "inspection_id"
-      - text: "Get period dossier"
-        description: "Get period for last open dossier"
-        verb: "GET"
-        path: "/dossiers/period"
-        parameters:
-          - name: "idActivite"
-            description: "Activity ID"
-            required: true
-            alternatives:
-              - "activity_id"
-          - name: "idSecteur"
-            description: "Sector ID"
-            required: true
-            alternatives:
-              - "sector_id"
-      - text: "Get periods list"
-        description: "Get list of all periods plus one"
-        verb: "GET"
-        path: "/periods"
-        parameters:
-          - name: "idActivite"
-            description: "Activity ID"
-            required: true
-            alternatives:
-              - "activity_id"
-          - name: "idSecteur"
-            description: "Sector ID"
-            required: true
-            alternatives:
-              - "sector_id"
-      - text: "Get period types"
-        description: "Get list of all period types"
-        verb: "GET"
-        path: "/periods/types"
-        parameters: []
-      - text: "Save period type"
-        description: "Save a new period type"
-        verb: "POST"
-        path: "/periods/types"
-        parameters:
-          - name: "periodeTypeDTO"
-            description: "Period type data"
-            required: true
-            alternatives:
-              - "period_type"
-              - "period_data"
-      - text: "Get system status"
-        description: "Get system status"
-        verb: "GET"
-        path: "/status"
-        parameters: []
-      - text: "Get trace data"
-        description: "Get trace data within date range"
-        verb: "GET"
-        path: "/trace"
-        parameters:
           - name: "dateDebut"
             description: "Start date"
             required: true
-            alternatives:
-              - "start_date"
           - name: "dateFin"
             description: "End date"
-            required: true
-            alternatives:
-              - "end_date"
-      - text: "Generate trace report"
-        description: "Generate trace report for date range"
-        verb: "POST"
-        path: "/trace/report"
+            required: false
+      - text: "persons_get"
+        description: "Retrieve person details by ID"
+        verb: "GET"
+        path: "/persons/{id}"
         parameters:
-          - name: "dateDebut"
-            description: "Start date"
+          - name: "id"
+            description: "Person ID"
             required: true
-            alternatives:
-              - "start_date"
-          - name: "dateFin"
-            description: "End date"
+      - text: "persons_adressesPROGRES"
+        description: "Get PROGRES addresses for a person"
+        verb: "GET"
+        path: "/persons/{id}/addresses"
+        parameters:
+          - name: "idPersonne"
+            description: "ID of the person"
             required: true
-            alternatives:
-              - "end_date"
+      - text: "persons_specialisationsPROGRES"
+        description: "Get PROGRES specializations for a person"
+        verb: "GET"
+        path: "/persons/{id}/specializations"
+        parameters:
+          - name: "idPersonne"
+            description: "ID of the person"
+            required: true
+      - text: "persons_getMembreCS"
+        description: "Get CS members"
+        verb: "GET"
+        path: "/cs_members"
+        parameters: []
+      - text: "persons_getMembreCSActives"
+        description: "Get active CS members"
+        verb: "GET"
+        path: "/active_cs_members"
+        parameters: []
+      - text: "persons_rechercherPersonnesByIds"
+        description: "Search persons by IDs"
+        verb: "GET"
+        path: "/persons_by_ids"
+        parameters:
+          - name: "ids"
+            description: "List of person IDs"
+            required: true
+      - text: "refinf_listePays"
+        description: "Get list of countries"
+        verb: "GET"
+        path: "/countries"
+        parameters: []
+      - text: "refinf_localitesByNPA"
+        description: "Get localities by postal code"
+        verb: "GET"
+        path: "/localities_by_postal_code"
+        parameters:
+          - name: "codePostal"
+            description: "Postal code"
+            required: true
+      - text: "refinf_localitesByLibelle"
+        description: "Get localities by name"
+        verb: "GET"
+        path: "/localities_by_name"
+        parameters:
+          - name: "libelle"
+            description: "Locality name"
+            required: true
+      - text: "commission_get"
+        description: "Retrieve commission details by ID"
+        verb: "GET"
+        path: "/commissions/{id}"
+        parameters:
+          - name: "id"
+            description: "Commission ID"
+            required: true
+      - text: "commission_planifiees"
+        description: "Get planned commissions"
+        verb: "GET"
+        path: "/planned_commissions"
+        parameters: []
+      - text: "commission_passees"
+        description: "Get past commissions"
+        verb: "GET"
+        path: "/past_commissions"
+        parameters: []
+      - text: "commission_create"
+        description: "Create a new commission"
+        verb: "POST"
+        path: "/commissions"
+        parameters:
+          - name: "commission"
+            description: "Commission data"
+            required: true
+      - text: "commission_reorderCommissionProcedure"
+        description: "Reorder commission procedure"
+        verb: "GET"
+        path: "/commissions/{id}/reorder"
+        parameters:
+          - name: "id"
+            description: "ID of the commission"
+            required: true
+          - name: "position"
+            description: "Position to remove"
+            required: true
+      - text: "commission_update"
+        description: "Update a commission"
+        verb: "PUT"
+        path: "/commissions/{id}"
+        parameters:
+          - name: "commission"
+            description: "Commission data"
+            required: true
+      - text: "commission_numeroUnique"
+        description: "Check if commission number is unique"
+        verb: "GET"
+        path: "/commissions/{id}/unique_number"
+        parameters:
+          - name: "id"
+            description: "ID of the commission"
+            required: true
+          - name: "dateCommission"
+            description: "Date of the commission"
+            required: true
+      - text: "commission_getCommissionsForProcedure"
+        description: "Get commissions for a procedure"
+        verb: "GET"
+        path: "/commissions_for_procedure"
+        parameters:
+          - name: "idProcedure"
+            description: "ID of the procedure"
+            required: true
+      - text: "commission_getForProcedure"
+        description: "Get commission for a procedure"
+        verb: "GET"
+        path: "/commissions_for_procedure/{id}"
+        parameters:
+          - name: "idProcedure"
+            description: "ID of the procedure"
+            required: true
+      - text: "commission_getMisEnCauseForCommission"
+        description: "Get accused persons for a commission"
+        verb: "GET"
+        path: "/commissions/{id}/accused"
+        parameters:
+          - name: "id"
+            description: "ID of the commission"
+            required: true
+      - text: "commission_sauverOrdreProcedures"
+        description: "Save the order of procedures"
+        verb: "POST"
+        path: "/commissions/{id}/order"
+        parameters:
+          - name: "liste"
+            description: "List of sessions"
+            required: true
+      - text: "commission_exportProcedureAssociees"
+        description: "Export associated procedures"
+        verb: "GET"
+        path: "/commissions/{id}/export"
+        parameters:
+          - name: "idCommission"
+            description: "ID of the commission"
+            required: true
+      - text: "doleance_recherche"
+        description: "Search for complaints"
+        verb: "GET"
+        path: "/complaints/search"
+        parameters:
+          - name: "recherche"
+            description:

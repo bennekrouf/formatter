@@ -1,10 +1,10 @@
 api_groups:
-  - name: "Example API"
-    description: "Example API endpoints"
-    base: "https://api.example.com"
+  - name: "an group name that you deduce from text"
+    description: "a description that you deduce from text or keep blank"
+    base: "the base url provided or kept blank"
     endpoints:
-      - text: "Get user"
-        description: "Retrieves user information"
+      - text: "a text that user could input to represent this endpoint"
+        description: "a description of the endpoint"
         verb: "GET"
         path: "/users/{id}"
         parameters:
@@ -15,9 +15,9 @@ api_groups:
               - "user_id"
               - "userId"
 
-  - name: "Auth Service"
-    description: "Authentication endpoints"
-    base: "https://auth.example.com"
+  - name: "Another service name that you deduce"
+    description: "Another endpoint description"
+    base: "the base url provided or kept blank"
     endpoints:
       - text: "Login"
         description: "Authenticates a user"
