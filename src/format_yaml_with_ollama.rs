@@ -2,7 +2,7 @@ use reqwest::Client;
 use std::env;
 use std::error::Error;
 use std::fs;
-use tracing::{debug, error, info};
+use tracing::{error, info};
 
 use crate::{
     extract_yaml::extract_yaml,

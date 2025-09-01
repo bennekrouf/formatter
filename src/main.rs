@@ -6,6 +6,7 @@ use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use format_yaml_with_ollama::format_yaml_with_cohere;
 use futures_util::stream::StreamExt;
 use futures_util::TryStreamExt;
+use std::env;
 use tempfile::NamedTempFile;
 use tracing::{debug, error, info};
 use uuid::Uuid;
@@ -30,22 +31,44 @@ async fn main() -> std::io::Result<()> {
     tracing_subscriber::fmt::init();
     info!("Starting YAML formatter HTTP service");
 
-    // Define file paths
-    let template_file_path = "template.yaml";
-    let system_prompt_path = "prompt/system_prompt.txt";
-    let user_prompt_path = "prompt/user_prompt.txt";
+    // Get base path from environment or use current directory
+    let config_path =
+        env::var("CONFIG_PATH").unwrap_or_else(|_| "/opt/api0/ai-uploader".to_string());
+
+    // Extract directory from config path if it's a file path
+    let base_path = if config_path.ends_with(".yaml") {
+        std::path::Path::new(&config_path)
+            .parent()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
+    } else {
+        config_path
+    };
+
+    // Define file paths relative to base path
+    let template_file_path = format!("{}/template.yaml", base_path);
+    let system_prompt_path = format!("{}/prompt/system_prompt.txt", base_path);
+    let user_prompt_path = format!("{}/prompt/user_prompt.txt", base_path);
+
+    info!("Using base path: {}", base_path);
+    info!("Template file: {}", template_file_path);
+    info!("System prompt: {}", system_prompt_path);
+    info!("User prompt: {}", user_prompt_path);
 
     // Ensure the prompt directory exists
-    if !Path::new("prompt").exists() {
-        std::fs::create_dir("prompt").expect("Failed to create prompt directory");
+    let prompt_dir = format!("{}/prompt", base_path);
+    if !Path::new(&prompt_dir).exists() {
+        std::fs::create_dir_all(&prompt_dir).expect("Failed to create prompt directory");
         info!("Created prompt directory");
     }
 
     // Check if prompt files exist
     for (path, name) in [
-        (system_prompt_path, "system prompt"),
-        (user_prompt_path, "user prompt"),
-        (template_file_path, "template file"),
+        (&system_prompt_path, "system prompt"),
+        (&user_prompt_path, "user prompt"),
+        (&template_file_path, "template file"),
     ] {
         if !Path::new(path).exists() {
             error!("{} file not found at {}", name, path);
@@ -54,9 +77,9 @@ async fn main() -> std::io::Result<()> {
     }
 
     let app_state = web::Data::new(AppState {
-        template_path: template_file_path.to_string(),
-        system_prompt_path: system_prompt_path.to_string(),
-        user_prompt_path: user_prompt_path.to_string(),
+        template_path: template_file_path,
+        system_prompt_path,
+        user_prompt_path,
     });
 
     // Start HTTP server
@@ -170,3 +193,4 @@ async fn format_yaml_handler(
         }
     }
 }
+
