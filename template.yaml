@@ -7,6 +7,7 @@ api_groups:
         description: "a description of the endpoint"
         verb: "GET"
         path: "/users/{id}"
+        base: "https://api.example.com"  # Add this line
         parameters:
           - name: "id"
             description: "User identifier"
@@ -23,6 +24,7 @@ api_groups:
         description: "Authenticates a user"
         verb: "POST"
         path: "/login"
+        base: "https://auth.example.com"  # Add this line
         parameters:
           - name: "username"
             description: "User's login name"

@@ -32,19 +32,26 @@ async fn main() -> std::io::Result<()> {
     info!("Starting YAML formatter HTTP service");
 
     // Get base path from environment or use current directory
-    let config_path =
+    let _config_path =
         env::var("CONFIG_PATH").unwrap_or_else(|_| "/opt/api0/ai-uploader".to_string());
 
     // Extract directory from config path if it's a file path
-    let base_path = if config_path.ends_with(".yaml") {
-        std::path::Path::new(&config_path)
-            .parent()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string()
+    // Get base path from environment or use current directory
+    let base_path = if let Ok(config_path) = env::var("CONFIG_PATH") {
+        // Production path provided via environment variable
+        if config_path.ends_with(".yaml") {
+            std::path::Path::new(&config_path)
+                .parent()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .to_string()
+        } else {
+            config_path
+        }
     } else {
-        config_path
+        // Development: use current directory
+        ".".to_string()
     };
 
     // Define file paths relative to base path
@@ -193,4 +200,3 @@ async fn format_yaml_handler(
         }
     }
 }
-
