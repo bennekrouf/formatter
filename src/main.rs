@@ -27,15 +27,28 @@ struct AppState {
 async fn main() -> std::io::Result<()> {
     // Load environment variables at startup
     dotenv::dotenv().ok();
+
+    // Parse command line arguments - optional "server" subcommand
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() > 1 && args[1] != "server" {
+        eprintln!("Usage: {} [server]", args[0]);
+        std::process::exit(1);
+    }
+
     // Initialize tracing
     tracing_subscriber::fmt::init();
     info!("Starting YAML formatter HTTP service");
 
-    // Get base path from environment or use current directory
-    let _config_path =
-        env::var("CONFIG_PATH").unwrap_or_else(|_| "/opt/api0/ai-uploader".to_string());
+    // Get port from environment variables (ROCKET_PORT, PORT, or default to 8080)
+    let port = env::var("ROCKET_PORT")
+        .or_else(|_| env::var("PORT"))
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse::<u16>()
+        .map_err(|e| {
+            error!("Invalid port number: {}", e);
+            std::io::Error::new(std::io::ErrorKind::InvalidInput, "Invalid port number")
+        })?;
 
-    // Extract directory from config path if it's a file path
     // Get base path from environment or use current directory
     let base_path = if let Ok(config_path) = env::var("CONFIG_PATH") {
         // Production path provided via environment variable
@@ -63,6 +76,7 @@ async fn main() -> std::io::Result<()> {
     info!("Template file: {}", template_file_path);
     info!("System prompt: {}", system_prompt_path);
     info!("User prompt: {}", user_prompt_path);
+    info!("Starting server on port: {}", port);
 
     // Ensure the prompt directory exists
     let prompt_dir = format!("{}/prompt", base_path);
@@ -89,14 +103,14 @@ async fn main() -> std::io::Result<()> {
         user_prompt_path,
     });
 
-    // Start HTTP server
+    // Start HTTP server with dynamic port
     HttpServer::new(move || {
         App::new()
             .app_data(app_state.clone())
             .route("/format-yaml", web::post().to(format_yaml_handler))
             .route("/health", web::get().to(health_check))
     })
-    .bind("0.0.0.0:8080")?
+    .bind(format!("0.0.0.0:{}", port))?
     .run()
     .await
 }
