@@ -47,7 +47,7 @@ Run the service:
 ./target/release/ai-uploader
 ```
 
-The service will start on port 8080.
+The service will start on port 6666.
 
 ## API Endpoints
 
@@ -61,14 +61,14 @@ The service will start on port 8080.
 ```bash
 curl -X POST \
   -F "file=@divess.yaml" \
-  http://localhost:8080/format-yaml \
+  http://localhost:6666/format-yaml \
   -o formatted_output.yaml
 ```
 
 ### Health check
 
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:6666/health
 # Returns: "Service is running"
 ```
 

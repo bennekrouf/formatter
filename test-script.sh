@@ -10,7 +10,7 @@ echo -e "${BLUE}Testing YAML Formatter HTTP Service${NC}"
 
 # Check if the service is running
 echo -e "\n${BLUE}Checking if service is running...${NC}"
-HEALTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health)
+HEALTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6666/health)
 
 if [ "$HEALTH_STATUS" -eq 200 ]; then
   echo -e "${GREEN}Service is running!${NC}"
@@ -34,14 +34,14 @@ echo -e "\n${BLUE}Uploading YAML file for formatting...${NC}"
 # Upload the file and save the response
 curl -s -X POST \
   -F "file=@$INPUT_FILE" \
-  http://localhost:8080/format-yaml \
+  http://localhost:6666/format-yaml \
   -o "$OUTPUT_FILE"
 
 # Check if the output file was created
 if [ -f "$OUTPUT_FILE" ]; then
   echo -e "${GREEN}File successfully formatted!${NC}"
   echo -e "Formatted output saved to ${BLUE}$OUTPUT_FILE${NC}"
-  
+
   # Count endpoints in the output file
   ENDPOINT_COUNT=$(grep -c "text:" "$OUTPUT_FILE")
   echo -e "The output file contains ${GREEN}$ENDPOINT_COUNT${NC} endpoints"

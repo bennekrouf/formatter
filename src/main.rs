@@ -39,10 +39,9 @@ async fn main() -> std::io::Result<()> {
     tracing_subscriber::fmt::init();
     info!("Starting YAML formatter HTTP service");
 
-    // Get port from environment variables (ROCKET_PORT, PORT, or default to 8080)
     let port = env::var("ROCKET_PORT")
         .or_else(|_| env::var("PORT"))
-        .unwrap_or_else(|_| "8080".to_string())
+        .unwrap_or_else(|_| "6666".to_string())
         .parse::<u16>()
         .map_err(|e| {
             error!("Invalid port number: {}", e);

@@ -65,7 +65,7 @@ async fn main() -> std::io::Result<()> {
             .route("/format-yaml", web::post().to(format_yaml_handler))
             .route("/health", web::get().to(health_check))
     })
-    .bind("0.0.0.0:8080")?
+    .bind("0.0.0.0:6666")?
     .run()
     .await
 }
