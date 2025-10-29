@@ -1,14 +1,14 @@
-use std::io::Write;
-use std::path::Path;
-// use std::sync::Mutex;
 use actix_multipart::{Field, Multipart};
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use format_yaml_with_ollama::format_yaml_with_cohere;
 use futures_util::stream::StreamExt;
 use futures_util::TryStreamExt;
 use std::env;
+use std::io::Write;
+use std::path::Path;
 use tempfile::NamedTempFile;
 use tracing::{debug, error, info};
+use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 use uuid::Uuid;
 
 mod extract_yaml;
@@ -36,7 +36,10 @@ async fn main() -> std::io::Result<()> {
     }
 
     // Initialize tracing
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::registry()
+        .with(EnvFilter::from_default_env())
+        .with(fmt::layer().json())
+        .init();
     info!("Starting YAML formatter HTTP service");
 
     let port = env::var("ROCKET_PORT")
