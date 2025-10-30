@@ -1,9 +1,11 @@
 use actix_multipart::{Field, Multipart};
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
+use anyhow::Result;
 use format_yaml_with_ollama::format_yaml_with_cohere;
 use futures_util::stream::StreamExt;
 use futures_util::TryStreamExt;
 use std::env;
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use tempfile::NamedTempFile;
@@ -23,6 +25,13 @@ struct AppState {
     user_prompt_path: String,
 }
 
+#[macro_export]
+macro_rules! app_log {
+    ($level:ident, $($arg:tt)*) => {
+        tracing::$level!(service = "api0", component = "ai-uploader", $($arg)*)
+    };
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Load environment variables at startup
@@ -35,11 +44,27 @@ async fn main() -> std::io::Result<()> {
         std::process::exit(1);
     }
 
-    // Initialize tracing
+    let file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true) // Clear file on startup
+        .open("/tmp/api0.log")
+        .expect("Failed to open log file");
+
     tracing_subscriber::registry()
-        .with(EnvFilter::from_default_env())
-        .with(fmt::layer().json())
+        .with(
+            fmt::layer()
+                .json()
+                .with_writer(file)
+                .with_current_span(false)
+                .with_span_list(false),
+        )
+        .with(
+            EnvFilter::from_default_env()
+                .add_directive("trace".parse().expect("Invalid log directive")),
+        )
         .init();
+
     info!("Starting YAML formatter HTTP service");
 
     let port = env::var("ROCKET_PORT")
