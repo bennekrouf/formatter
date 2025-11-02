@@ -4,13 +4,11 @@ use anyhow::Result;
 use format_yaml_with_ollama::format_yaml_with_cohere;
 use futures_util::stream::StreamExt;
 use futures_util::TryStreamExt;
+use graflog::{app_log, init_logging};
 use std::env;
-use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use tempfile::NamedTempFile;
-use tracing::{debug, error, info};
-use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 use uuid::Uuid;
 
 mod extract_yaml;
@@ -25,54 +23,27 @@ struct AppState {
     user_prompt_path: String,
 }
 
-#[macro_export]
-macro_rules! app_log {
-    ($level:ident, $($arg:tt)*) => {
-        tracing::$level!(service = "api0", component = "ai-uploader", $($arg)*)
-    };
-}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Load environment variables at startup
     dotenv::dotenv().ok();
+    init_logging!("/var/log/api0.log", "api0", "ai-uploader");
 
     // Parse command line arguments - optional "server" subcommand
     let args: Vec<String> = std::env::args().collect();
     if args.len() > 1 && args[1] != "server" {
-        eprintln!("Usage: {} [server]", args[0]);
+        app_log!(info, "Usage: {} [server]", args[0]);
         std::process::exit(1);
     }
 
-    let file = OpenOptions::new()
-        .create(true)
-        .write(true)
-        .truncate(true) // Clear file on startup
-        .open("/tmp/api0.log")
-        .expect("Failed to open log file");
-
-    tracing_subscriber::registry()
-        .with(
-            fmt::layer()
-                .json()
-                .with_writer(file)
-                .with_current_span(false)
-                .with_span_list(false),
-        )
-        .with(
-            EnvFilter::from_default_env()
-                .add_directive("trace".parse().expect("Invalid log directive")),
-        )
-        .init();
-
-    info!("Starting YAML formatter HTTP service");
+    app_log!(info, "Starting YAML formatter HTTP service");
 
     let port = env::var("ROCKET_PORT")
         .or_else(|_| env::var("PORT"))
         .unwrap_or_else(|_| "6666".to_string())
         .parse::<u16>()
         .map_err(|e| {
-            error!("Invalid port number: {}", e);
+            app_log!(error, "Invalid port number: {}", e);
             std::io::Error::new(std::io::ErrorKind::InvalidInput, "Invalid port number")
         })?;
 
@@ -99,17 +70,17 @@ async fn main() -> std::io::Result<()> {
     let system_prompt_path = format!("{}/prompt/system_prompt.txt", base_path);
     let user_prompt_path = format!("{}/prompt/user_prompt.txt", base_path);
 
-    info!("Using base path: {}", base_path);
-    info!("Template file: {}", template_file_path);
-    info!("System prompt: {}", system_prompt_path);
-    info!("User prompt: {}", user_prompt_path);
-    info!("Starting server on port: {}", port);
+    app_log!(info, "Using base path: {}", base_path);
+    app_log!(info, "Template file: {}", template_file_path);
+    app_log!(info, "System prompt: {}", system_prompt_path);
+    app_log!(info, "User prompt: {}", user_prompt_path);
+    app_log!(info, "Starting server on port: {}", port);
 
     // Ensure the prompt directory exists
     let prompt_dir = format!("{}/prompt", base_path);
     if !Path::new(&prompt_dir).exists() {
         std::fs::create_dir_all(&prompt_dir).expect("Failed to create prompt directory");
-        info!("Created prompt directory");
+        app_log!(info, "Created prompt directory");
     }
 
     // Check if prompt files exist
@@ -119,7 +90,7 @@ async fn main() -> std::io::Result<()> {
         (&template_file_path, "template file"),
     ] {
         if !Path::new(path).exists() {
-            error!("{} file not found at {}", name, path);
+            app_log!(error, "{} file not found at {}", name, path);
             panic!("Missing {} file", name);
         }
     }
@@ -157,7 +128,7 @@ async fn save_field(field: Field) -> Result<String, Error> {
         sanitize_filename::sanitize(filename)
     );
 
-    debug!("Saving uploaded file to {}", filepath);
+    app_log!(debug, "Saving uploaded file to {}", filepath);
 
     let mut temp_file = std::fs::File::create(&filepath)?;
     let mut bytes = web::BytesMut::new();
@@ -182,7 +153,7 @@ async fn format_yaml_handler(
     // Process the multipart form data
     let mut multipart_data = multipart;
 
-    info!("Processing uploaded file");
+    app_log!(info, "Processing uploaded file");
     'field_loop: while let Ok(Some(field)) = multipart_data.try_next().await {
         if field.name() == Some("file") {
             input_path = Some(save_field(field).await?);
@@ -191,11 +162,11 @@ async fn format_yaml_handler(
     }
 
     let input_file_path = input_path.ok_or_else(|| {
-        error!("No file was uploaded");
+        app_log!(error, "No file was uploaded");
         actix_web::error::ErrorBadRequest("No file was uploaded")
     })?;
 
-    info!("Processing file: {}", input_file_path);
+    app_log!(info, "Processing file: {}", input_file_path);
 
     // Process the uploaded file
     match format_yaml_with_cohere(
@@ -209,7 +180,7 @@ async fn format_yaml_handler(
     {
         Ok(formatted_yaml) => {
             // Prepare the response
-            info!("Successfully formatted YAML");
+            app_log!(info, "Successfully formatted YAML");
 
             // Create a temporary file for the response
             let mut temp_file = NamedTempFile::new()?;
@@ -218,7 +189,7 @@ async fn format_yaml_handler(
 
             // Clean up the input file
             if let Err(e) = std::fs::remove_file(&input_file_path) {
-                error!("Failed to remove temporary input file: {}", e);
+                app_log!(error, "Failed to remove temporary input file: {}", e);
             }
 
             // Return the formatted YAML
@@ -231,10 +202,14 @@ async fn format_yaml_handler(
                 .body(formatted_yaml))
         }
         Err(e) => {
-            error!("Error formatting YAML: {}", e);
+            app_log!(error, "Error formatting YAML: {}", e);
             // Clean up the input file
             if let Err(cleanup_err) = std::fs::remove_file(&input_file_path) {
-                error!("Failed to remove temporary input file: {}", cleanup_err);
+                app_log!(
+                    error,
+                    "Failed to remove temporary input file: {}",
+                    cleanup_err
+                );
             }
 
             Ok(HttpResponse::InternalServerError().body(format!("Error: {}", e)))

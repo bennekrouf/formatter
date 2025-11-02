@@ -1,8 +1,8 @@
+use graflog::app_log;
 use reqwest::Client;
 use std::env;
 use std::error::Error;
 use std::fs;
-use tracing::{error, info};
 
 use crate::{
     extract_yaml::extract_yaml,
@@ -46,7 +46,7 @@ pub async fn format_yaml_with_cohere(
         }],
     };
 
-    info!("Calling Cohere API");
+    app_log!(info, "Calling Cohere API");
     let resp = client
         .post("https://api.cohere.ai/v1/chat")
         .header("Authorization", format!("Bearer {}", api_key))
@@ -57,12 +57,12 @@ pub async fn format_yaml_with_cohere(
 
     if !resp.status().is_success() {
         let error_text = resp.text().await?;
-        error!("Failed to call Cohere: {}", error_text);
+        app_log!(error, "Failed to call Cohere: {}", error_text);
         return Err(format!("Cohere API error: {}", error_text).into());
     }
 
     let cohere_response: CohereResponse = resp.json().await?;
-    info!("Received response from Cohere");
+    app_log!(info, "Received response from Cohere");
 
     // Extract and validate YAML (same as before)
     let yaml_content = extract_yaml(&cohere_response.text);

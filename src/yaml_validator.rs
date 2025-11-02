@@ -1,17 +1,17 @@
+use graflog::app_log;
 use std::error::Error;
-use tracing::{info, warn};
 
 /// Validates and fixes common YAML indentation issues
 pub fn validate_and_fix_yaml(yaml_content: &str) -> Result<String, Box<dyn Error>> {
     // Parse the YAML content to check for errors
     match serde_yaml::from_str::<serde_yaml::Value>(yaml_content) {
         Ok(_) => {
-            info!("YAML validation successful");
+            app_log!(info, "YAML validation successful");
             Ok(yaml_content.to_string())
         }
         Err(e) => {
-            warn!("YAML validation failed: {}", e);
-            info!("Attempting to fix YAML indentation issues");
+            app_log!(warn, "YAML validation failed: {}", e);
+            app_log!(info, "Attempting to fix YAML indentation issues");
 
             // Fix indentation issues
             let fixed_yaml = fix_yaml_indentation(yaml_content);
@@ -19,11 +19,11 @@ pub fn validate_and_fix_yaml(yaml_content: &str) -> Result<String, Box<dyn Error
             // Validate the fixed YAML
             match serde_yaml::from_str::<serde_yaml::Value>(&fixed_yaml) {
                 Ok(_) => {
-                    info!("YAML fixed successfully");
+                    app_log!(info, "YAML fixed successfully");
                     Ok(fixed_yaml)
                 }
                 Err(e) => {
-                    warn!("Could not fix YAML automatically: {}", e);
+                    app_log!(warn, "Could not fix YAML automatically: {}", e);
                     Err(format!("Failed to fix YAML: {}", e).into())
                 }
             }
