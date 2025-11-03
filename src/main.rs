@@ -27,7 +27,18 @@ struct AppState {
 async fn main() -> std::io::Result<()> {
     // Load environment variables at startup
     dotenv::dotenv().ok();
-    init_logging!("/var/log/api0.log", "api0", "ai-uploader");
+
+    if env::var("ROCKET_PORT_AI_UPLOADER").is_err() {
+        eprintln!("Error: ROCKET_PORT_AI_UPLOADER environment variable is required");
+        std::process::exit(1);
+    }
+    if env::var("LOG_PATH_API0").is_err() {
+        eprintln!("Error: LOG_PATH_API0 environment variable is required");
+        std::process::exit(1);
+    }
+
+    let log_path = env::var("LOG_PATH_API0").unwrap_or_else(|_| "/var/log/api0.log".to_string());
+    init_logging!(&log_path, "api0", "ai-uploader");
 
     // Parse command line arguments - optional "server" subcommand
     let args: Vec<String> = std::env::args().collect();
@@ -38,7 +49,7 @@ async fn main() -> std::io::Result<()> {
 
     app_log!(info, "Starting YAML formatter HTTP service");
 
-    let port = env::var("ROCKET_PORT")
+    let port = env::var("ROCKET_PORT_AI_UPLOADER")
         .or_else(|_| env::var("PORT"))
         .unwrap_or_else(|_| "6666".to_string())
         .parse::<u16>()
