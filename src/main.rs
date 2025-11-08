@@ -38,7 +38,7 @@ async fn main() -> std::io::Result<()> {
     }
 
     let log_path = env::var("LOG_PATH_API0").unwrap_or_else(|_| "/var/log/api0.log".to_string());
-    init_logging!(&log_path, "api0", "ai-uploader", "info");
+    init_logging!(&log_path, "api0", "ai-uploader", "debug,rocket::server=off");
 
     // Parse command line arguments - optional "server" subcommand
     let args: Vec<String> = std::env::args().collect();
