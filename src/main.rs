@@ -10,6 +10,7 @@ use std::io::Write;
 use std::path::Path;
 use tempfile::NamedTempFile;
 use uuid::Uuid;
+use graflog::LogOption;
 
 mod extract_yaml;
 mod format_yaml_with_ollama;
@@ -38,7 +39,10 @@ async fn main() -> std::io::Result<()> {
     }
 
     let log_path = env::var("LOG_PATH_API0").unwrap_or_else(|_| "/var/log/api0.log".to_string());
-    init_logging!(&log_path, "api0", "ai-uploader", "debug,rocket::server=off");
+       init_logging!(&log_path, "api0", "ai-uploader", &[
+    LogOption::Debug,
+    LogOption::RocketOff
+]);
 
     // Parse command line arguments - optional "server" subcommand
     let args: Vec<String> = std::env::args().collect();
