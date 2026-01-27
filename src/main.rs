@@ -20,6 +20,7 @@ mod yaml_validator;
 
 struct AppState {
     template_path: String,
+    reference_data_template_path: String,
     system_prompt_path: String,
     user_prompt_path: String,
 }
@@ -82,6 +83,7 @@ async fn main() -> std::io::Result<()> {
 
     // Define file paths relative to base path
     let template_file_path = format!("{}/template.yaml", base_path);
+    let reference_data_template_path = format!("{}/template_ref_data.yaml", base_path);
     let system_prompt_path = format!("{}/prompt/system_prompt.txt", base_path);
     let user_prompt_path = format!("{}/prompt/user_prompt.txt", base_path);
 
@@ -102,7 +104,9 @@ async fn main() -> std::io::Result<()> {
     for (path, name) in [
         (&system_prompt_path, "system prompt"),
         (&user_prompt_path, "user prompt"),
+        (&user_prompt_path, "user prompt"),
         (&template_file_path, "template file"),
+        (&reference_data_template_path, "reference data template file"),
     ] {
         if !Path::new(path).exists() {
             app_log!(error, "{} file not found at {}", name, path);
@@ -112,6 +116,7 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = web::Data::new(AppState {
         template_path: template_file_path,
+        reference_data_template_path,
         system_prompt_path,
         user_prompt_path,
     });
@@ -121,6 +126,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(app_state.clone())
             .route("/format-yaml", web::post().to(format_yaml_handler))
+            .route("/format-reference-data", web::post().to(format_reference_data_handler))
             .route("/health", web::get().to(health_check))
     })
     .bind(format!("0.0.0.0:{}", port))?
@@ -218,6 +224,64 @@ async fn format_yaml_handler(
         }
         Err(e) => {
             app_log!(error, "Error formatting YAML: {}", e);
+            Ok(HttpResponse::InternalServerError().body(format!("Error: {}", e)))
+        }
+    }
+}
+
+async fn format_reference_data_handler(
+    multipart: Multipart,
+    app_state: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let mut input_path = None;
+
+    // Process the multipart form data
+    let mut multipart_data = multipart;
+
+    app_log!(info, "Processing uploaded reference data file");
+    'field_loop: while let Ok(Some(field)) = multipart_data.try_next().await {
+        if field.name() == Some("file") {
+            input_path = Some(save_field(field).await?);
+            break 'field_loop;
+        }
+    }
+
+    let input_file_path = input_path.ok_or_else(|| {
+        app_log!(error, "No file was uploaded");
+        actix_web::error::ErrorBadRequest("No file was uploaded")
+    })?;
+
+    app_log!(info, "Processing file: {}", input_file_path);
+
+    // Process the uploaded file using the reference data template
+    match format_yaml_with_cohere(
+        &input_file_path,
+        &app_state.reference_data_template_path,
+        &app_state.system_prompt_path,
+        &app_state.user_prompt_path,
+    )
+    .await
+    {
+        Ok(formatted_yaml) => {
+            // Prepare the response
+            app_log!(info, "Successfully formatted reference data");
+
+            // Clean up the input file
+            if let Err(e) = std::fs::remove_file(&input_file_path) {
+                app_log!(error, "Failed to remove temporary input file: {}", e);
+            }
+
+            // Return the formatted YAML/JSON
+            Ok(HttpResponse::Ok()
+                .content_type("application/json")
+                .append_header((
+                    "Content-Disposition",
+                    "attachment; filename=\"reference_data.json\"",
+                ))
+                .body(formatted_yaml))
+        }
+        Err(e) => {
+            app_log!(error, "Error formatting reference data: {}", e);
             // Clean up the input file
             if let Err(cleanup_err) = std::fs::remove_file(&input_file_path) {
                 app_log!(

@@ -1,0 +1,9 @@
+prompt_template: |
+  Extract key-value pairs from the following text.
+  Return ONLY valid JSON with a simple key-value structure flattened or nested as appropriate.
+  If the input is a list of items, use a suitable key like "items" or the entity name.
+  
+  Input:
+  {INPUT_CONTENT}
+  
+  JSON Output:
