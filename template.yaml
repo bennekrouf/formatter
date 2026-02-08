@@ -5,6 +5,7 @@ api_groups:
     endpoints:
       - text: "a text that user could input to represent this endpoint"
         description: "a description of the endpoint"
+        suggested_sentence: "Get user details for user id 123"
         verb: "GET"
         path: "/users/{id}"
         base: "https://api.example.com"  # Add this line
@@ -22,6 +23,7 @@ api_groups:
     endpoints:
       - text: "Login"
         description: "Authenticates a user"
+        suggested_sentence: "Log in with username user1 and password secret"
         verb: "POST"
         path: "/login"
         base: "https://auth.example.com"  # Add this line

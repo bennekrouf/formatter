@@ -1,0 +1,9 @@
+{"timestamp":"2026-01-29T14:26:24.172568Z","level":"INFO","fields":{"message":"Starting YAML formatter HTTP service","service":"ai-uploader","component":"main","timestamp":"2026-01-29T14:26:24.172485+00:00"}}
+{"timestamp":"2026-01-29T14:26:24.172838Z","level":"INFO","fields":{"message":"Using base path: .","service":"ai-uploader","component":"main","timestamp":"2026-01-29T14:26:24.172836+00:00"}}
+{"timestamp":"2026-01-29T14:26:24.172862Z","level":"INFO","fields":{"message":"Template file: ./template.yaml","service":"ai-uploader","component":"main","timestamp":"2026-01-29T14:26:24.172861+00:00"}}
+{"timestamp":"2026-01-29T14:26:24.172881Z","level":"INFO","fields":{"message":"System prompt: ./prompt/system_prompt.txt","service":"ai-uploader","component":"main","timestamp":"2026-01-29T14:26:24.172880+00:00"}}
+{"timestamp":"2026-01-29T14:26:24.172899Z","level":"INFO","fields":{"message":"User prompt: ./prompt/user_prompt.txt","service":"ai-uploader","component":"main","timestamp":"2026-01-29T14:26:24.172898+00:00"}}
+{"timestamp":"2026-01-29T14:26:24.172929Z","level":"INFO","fields":{"message":"Starting server on port: 8080","service":"ai-uploader","component":"main","timestamp":"2026-01-29T14:26:24.172928+00:00"}}
+{"timestamp":"2026-01-29T14:26:24.173348Z","level":"INFO","fields":{"message":"starting 12 workers"}}
+{"timestamp":"2026-01-29T14:26:24.173408Z","level":"INFO","fields":{"message":"Actix runtime found; starting in Actix runtime"}}
+{"timestamp":"2026-01-29T14:26:24.173447Z","level":"INFO","fields":{"message":"starting service: \"actix-web-service-0.0.0.0:8080\", workers: 12, listening on: 0.0.0.0:8080"}}

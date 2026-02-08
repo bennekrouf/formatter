@@ -11,4 +11,12 @@ IMPORTANT INSTRUCTIONS:
 - Verify that the output contains the same number of endpoints as the input
 - Return ONLY valid YAML with no explanations or commentary
 
+GENERATION INSTRUCTIONS:
+- For each endpoint, you MUST generate a 'suggested_sentence' field.
+- This sentence should be a natural language request that triggers the endpoint.
+- It MUST include examples for ALL parameters defined in the endpoint.
+- Make the sentence realistic and complete (e.g., "Book a flight for John and Sarah on Friday October 3rd from Paris to Porto").
+- Do not use placeholders like {id}, use concrete example values.
+- ensure strictly NO duplicate keys in the output (e.g. do not have two 'description' fields for the same item).
+
 Your expertise is in ensuring complete and accurate data transformation while maintaining strict YAML formatting standards. The user will provide the input YAML and template structure in the main prompt.
