@@ -1,0 +1,97 @@
+name: Build & Deploy — AI Uploader
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # ── Build & test ───────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Run tests
+        run: cargo test
+
+      - name: Upload binary artifact
+        # Rust converts hyphens to underscores in binary names
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-uploader-binary
+          path: target/release/ai_uploader
+          retention-days: 1
+
+  # ── Deploy (master push only) ──────────────────────────────────────────────
+  deploy:
+    name: Deploy to VPS
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download binary artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ai-uploader-binary
+          path: dist/
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload binary
+        run: |
+          chmod +x dist/ai_uploader
+          scp -i ~/.ssh/deploy_key \
+            dist/ai_uploader \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/api0/bin/ai-uploader.new
+
+      - name: Sync config.yaml
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+            "mkdir -p /opt/api0/ai-uploader"
+          scp -i ~/.ssh/deploy_key \
+            config.yaml \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/api0/ai-uploader/config.yaml
+
+      - name: Atomic swap & restart
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+            "set -e
+             chmod +x /opt/api0/bin/ai-uploader.new
+             mv /opt/api0/bin/ai-uploader.new /opt/api0/bin/ai-uploader
+             pm2 restart api0-ai-uploader
+             pm2 list"
