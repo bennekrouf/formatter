@@ -60,10 +60,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download binary artifact
+        # run-id must be set explicitly; without it download-artifact@v4 can
+        # fail to locate artifacts uploaded in the same run (known GHA issue).
         uses: actions/download-artifact@v4
         with:
           name: ai-uploader-binary
           path: dist/
+          run-id: ${{ github.run_id }}
 
       - name: Setup SSH
         run: |
