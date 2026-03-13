@@ -39,13 +39,15 @@ jobs:
         run: cargo test
 
       - name: Upload binary artifact
-        # Rust converts hyphens to underscores in binary names
+        # Rust converts hyphens to underscores in binary names.
+        # retention-days: 3 gives a safe window for deploy job re-runs without
+        # hitting the "artifact not found" error that occurs with retention-days: 1.
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: ai-uploader-binary
           path: target/release/ai_uploader
-          retention-days: 1
+          retention-days: 3
 
   # ── Deploy (master push only) ──────────────────────────────────────────────
   deploy:
